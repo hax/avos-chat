@@ -94,6 +94,7 @@ module.exports = Class.extend(EventEmitter)({
 	say: function (to, text) {
 		return this.doCommand('direct', {
 			msg: JSON.stringify({
+				type: 'text',
 				content: {text: text},
 				guid: Math.random().toString('36').slice(2),
 				fromId: this._self,
