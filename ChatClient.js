@@ -64,14 +64,14 @@ module.exports = Class.extend(EventEmitter)({
 			then(function (data) {
 				protocol('auth', data)
 				this._self = self
-				data.peers.forEach(function (id) {
+				data.sessionPeerIds.forEach(function (id) {
 					this._peers[id] = { presence: null }
 				}, this)
 				return this.doCommand('session.open', {
-					sessionPeerIds: data.peers,
-					t: data.ts,
-					n: data.nonce,
-					s: data.mac,
+					sessionPeerIds: data.sessionPeerIds,
+					t: data.t,
+					n: data.n,
+					s: data.s,
 				})
 			}.bind(this)).
 			then(function (opened) {
@@ -109,15 +109,15 @@ module.exports = Class.extend(EventEmitter)({
 		return this._settings.auth(this._self, peers).
 			then(function (data) {
 				protocol('auth', data)
-				data.peers.forEach(function (id) {
+				data.sessionPeerIds.forEach(function (id) {
 					if (!this._peers[id]) this._peers[id] = { presence: null }
 					else this._peers[id].presence = null
 				}, this)
 				return this.doCommand('session.add', {
-					sessionPeerIds: data.peers,
-					t: data.ts,
-					n: data.nonce,
-					s: data.mac,
+					sessionPeerIds: data.sessionPeerIds,
+					t: data.t,
+					n: data.n,
+					s: data.s,
 				})
 			}.bind(this))
 			.then(function (watched) {
