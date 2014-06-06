@@ -167,7 +167,9 @@ module.exports = Class.extend(EventEmitter)({
 
 function Command(name) {
 	var i = name.indexOf('.')
-	if (i === -1) return { cmd: name, response: 'ack' }
+	if (i === -1) {
+		return { cmd: name, response: name === 'ack' ? 'ackreq' : 'ack' }
+	}
 	var cmd = name.slice(0, i), op0 = name.slice(i + 1), op1
 	if (op0 === 'query') op1 = 'query-result'
 	else if (op0.slice(-1) === 'e') op1 = op0 + 'd'
