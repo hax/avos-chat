@@ -2,9 +2,14 @@
 
 var Promise = require('es6-promise').Promise
 var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
+var rest = require('../util/rest')
 
-function ChatAuth(remoteURL) {
-	return function (self, peers) {
+module.exports = function ChatAuth(remoteURL) {
+	return function (selfId, peerIds) {
+		return rest('POST', remoteURL, {
+			payload: { selfId: selfId, peerIds: peerIds },
+			format: 'json',
+		}, { type: 'json' })
 		return new Promise(function (resolve, reject) {
 			var xhr = new XMLHttpRequest()
 			xhr.open('POST', remoteURL)
@@ -20,10 +25,9 @@ function ChatAuth(remoteURL) {
 				else reject(res)
 			}
 			xhr.onerror = reject
+			xhr.setRequestHeader('Accept', 'application/json')
 			xhr.setRequestHeader('Content-Type', 'application/json')
-			xhr.send(JSON.stringify({ self: self, peers: peers }))
+			xhr.send(JSON.stringify({ selfId: selfId, peerIds: peerIds }))
 		})
 	}
 }
-
-module.exports = ChatAuth
