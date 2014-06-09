@@ -24,6 +24,7 @@ module.exports = Class.extend(EventEmitter)({
 			res.sessionPeerIds.forEach(function (id) {
 				this._peers[id].presence = res.status === 'on'
 			}, this)
+			this.emit('presence', res)
 		}.bind(this))
 
 		this._in.on('direct', function (res) {
