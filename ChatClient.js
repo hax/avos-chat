@@ -25,6 +25,37 @@ module.exports = Class.extend(EventEmitter)({
 				this._peers[id].presence = res.status === 'on'
 			}, this)
 		}.bind(this))
+
+		this._in.on('direct', function (res) {
+			this._incCount()
+			var msg
+			try {
+				msg = JSON.parse(res.msg)
+			} catch (e) {
+				this.emit('error', 'Message format error' + ' -- ' + res.msg)
+			}
+			msg.fromPeerId = res.fromPeerId
+			protocol(msg.type, msg)
+			this.emit(msg.type, msg)
+		}.bind(this))
+		this._in.on('ackreq', function (res) {
+			this._confirmCount = res.c
+		}.bind(this))
+
+		this._count = 0
+	},
+	_incCount: function () {
+		this._count++
+		if (this._count >= this._confirmCount) return ack()
+	},
+	ack: function () {
+		protocol('ack')
+		clearTimeout(this._ackTask)
+		this._ackTask = setTimeout(this.ack.bind(this), 120000)
+		return this.doCommand('ack').then(function (res) {
+			this._count = 0
+			this._confirmCount = res.c
+		}.bind(this))
 	},
 	serverURL: function () {
 		var server = this._settings.server
