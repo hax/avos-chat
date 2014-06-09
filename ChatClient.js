@@ -36,8 +36,8 @@ module.exports = Class.extend(EventEmitter)({
 				this.emit('error', 'Message format error' + ' -- ' + res.msg)
 			}
 			msg.fromPeerId = res.fromPeerId
-			protocol(msg.type, msg)
-			this.emit(msg.type, msg)
+			protocol('message:' + msg.type, msg)
+			this.emit('message', msg)
 		}.bind(this))
 		this._in.on('ackreq', function (res) {
 			this._confirmCount = res.c
