@@ -8,7 +8,10 @@ module.exports = function getJSON(url, parameters) {
 	if (typeof jQuery !== 'undefined') {
 		return Promise.resolve(jQuery.getJSON.apply(jQuery, arguments))
 	} else {
-		return rest('GET', url + '?' + qs.stringify(parameters))
+		var i = url.indexOf('?')
+		if (i === -1) url += '?' + qs.stringify(parameters)
+		else url = url.slice(0, i + 1) +  qs.stringify(parameters)
+		return rest('GET', url)
 	}
 }
 
