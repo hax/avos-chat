@@ -39,7 +39,9 @@ module.exports = Class.extend(EventEmitter)({
 			protocol('message:' + msg.type, msg)
 			this.emit('message', msg)
 		}.bind(this))
+
 		this._in.on('ackreq', function (res) {
+			this.ack()
 			this._confirmCount = res.c
 		}.bind(this))
 
