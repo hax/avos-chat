@@ -49,7 +49,7 @@ module.exports = Class.extend(EventEmitter)({
 	},
 	_incCount: function () {
 		this._count++
-		if (this._count >= this._confirmCount) return ack()
+		if (this._count >= this._confirmCount) return this.ack()
 	},
 	ack: function () {
 		protocol('ack')
