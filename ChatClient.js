@@ -124,17 +124,20 @@ module.exports = Class.extend(EventEmitter)({
 		return this.doCommand('session.close')
 	},
 	say: function (to, text) {
+		var msg = {
+			type: 'text',
+			content: {text: text},
+			guid: Math.random().toString('36').slice(2),
+			fromId: this._self,
+			toId: to,
+			timestamp: Date.now() / 1000 | 0,
+		}
 		return this.doCommand('direct', {
-			msg: JSON.stringify({
-				type: 'text',
-				content: {text: text},
-				guid: Math.random().toString('36').slice(2),
-				fromId: this._self,
-				toId: to,
-				timestamp: Date.now() / 1000 | 0,
-			}),
+			msg: JSON.stringify(msg),
 			toPeerIds: [].concat(to),
 			transient: false,
+		}).then(function () {
+			return msg
 		})
 	},
 	watch: function (peers) {
