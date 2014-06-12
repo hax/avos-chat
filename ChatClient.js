@@ -20,6 +20,7 @@ module.exports = Class.extend(EventEmitter)({
 		this._in = new EventEmitter()
 		this._self = null
 		this._peers = Object.create(null)
+
 		this._in.on('presence', function (res) {
 			res.sessionPeerIds.forEach(function (id) {
 				this._peers[id].presence = res.status === 'on'
@@ -44,6 +45,7 @@ module.exports = Class.extend(EventEmitter)({
 			protocol('ackreq', res)
 		}.bind(this))
 
+		this._waitCommands = []
 	},
 	serverURL: function () {
 		var server = this._settings.server
@@ -180,10 +182,13 @@ module.exports = Class.extend(EventEmitter)({
 		msg.op = cmd.op
 		protocol('send', msg)
 		this._ws.send(JSON.stringify(msg))
+		if (cmd.response) return this._wait(cmd.response)
+	},
+	_wait: function (response) {
 		return new Promise(function (resolve, reject) {
-				protocol('wait ' + cmd.response)
-				this._in.once(cmd.response, resolve)
-			}.bind(this))
+			protocol('wait ' + response)
+			this._waitCommands.push([response, resolve, reject])
+		}.bind(this))
 	}
 })
 
@@ -217,8 +222,13 @@ function processMessage(e) {
 	}
 	var type = data.cmd
 	if (data.op) type += '.' + data.op
-	this._in.emit(type, data)
 	protocol('got ' + type, data)
+	if (this._waitCommands.length > 0) {
+		if (this._waitCommands[0][0] === type) {
+			this._waitCommands.shift()[1](data)
+		}
+	}
+	this._in.emit(type, data)
 }
 
 
