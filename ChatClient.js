@@ -205,14 +205,14 @@ function reconnect(evt) {
 	//todo: reconnect
 }
 
-function processMessage(evt) {
-	network(evt.type, evt.data)
+function processMessage(e) {
+	network(e.type, e.data)
 	var data
 	try {
-		data = JSON.parse(evt.data)
+		data = JSON.parse(e.data)
 	} catch(e) {
-		this._in.emit('error', evt.data)
-		protocol('error', evt.data)
+		protocol('error', e.data)
+		this._in.emit('error', e.data)
 		return
 	}
 	var type = data.cmd
