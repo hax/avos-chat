@@ -1,15 +1,16 @@
 'use strict'
 
+var Debug = require('debug')
+var network = Debug('ChatClient:network')
+var protocol = Debug('ChatClient:protocol')
+var api = Debug('ChatClient:api')
+
 var Promise = require('es6-promise').Promise
 var WebSocket = require('ws')
 
 var EventEmitter = require('events').EventEmitter
 
 var Class = require('mmclass').Class
-
-var protocol = require('debug')('ChatClient:protocol')
-var network = require('debug')('ChatClient:network')
-
 
 module.exports = Class.extend(EventEmitter)({
 	constructor: function ChatClient(settings) {
@@ -36,13 +37,13 @@ module.exports = Class.extend(EventEmitter)({
 				this.emit('error', 'Message format error' + ' -- ' + res.msg)
 			}
 			msg.fromPeerId = res.fromPeerId
-			protocol('message:' + msg.type, msg)
+			api('message event: ' + msg.type, msg)
 			this.emit('message', msg)
 			this.doCommand('ack')
 		}.bind(this))
 
 		this._in.on('ackreq', function (res) {
-			protocol('ackreq', res)
+			protocol('ackreq?', res)
 		}.bind(this))
 
 		this._waitCommands = []
@@ -73,7 +74,8 @@ module.exports = Class.extend(EventEmitter)({
 				}
 				ws.onclose = function (evt) {
 					network('closed', evt)
-				}
+					this.emit('close', evt)
+				}.bind(this)
 				if (autoReconnect) ws.onerror = reconnect.bind(this)
 				ws.onmessage = processMessage.bind(this)
 				this._ws = ws
@@ -180,8 +182,9 @@ module.exports = Class.extend(EventEmitter)({
 		var cmd = Command(name)
 		msg.cmd = cmd.cmd
 		msg.op = cmd.op
-		protocol('send', msg)
-		this._ws.send(JSON.stringify(msg))
+		var s = JSON.stringify(msg)
+		this._ws.send(s)
+		network('send', s)
 		if (cmd.response) return this._wait(cmd.response)
 	},
 	_wait: function (response) {
@@ -205,8 +208,8 @@ function Command(name) {
 	return { cmd: cmd, op: op0, response: response }
 }
 
-function reconnect(evt) {
-	network('error', evt)
+function reconnect(e) {
+	network('error', e)
 	//todo: reconnect
 }
 
