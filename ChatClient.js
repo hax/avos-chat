@@ -192,6 +192,10 @@ module.exports = Class.extend(EventEmitter)({
 			protocol('wait ' + response)
 			this._waitCommands.push([response, resolve, reject])
 		}.bind(this))
+	},
+	ping: function () {
+		this._ws.send('{}')
+		return this._wait('pong')
 	}
 })
 
@@ -215,23 +219,28 @@ function reconnect(e) {
 
 function processMessage(e) {
 	network(e.type, e.data)
-	var data
-	try {
-		data = JSON.parse(e.data)
-	} catch(e) {
-		protocol('error', e.data)
-		this._in.emit('error', e.data)
-		return
+	var name, data
+	if (e.data === '{}') {
+		name = 'pong'
+		data = {}
+	} else {
+		try {
+			data = JSON.parse(e.data)
+		} catch(e) {
+			protocol('error', e.data)
+			this._in.emit('error', e.data)
+			return
+		}
+		name = data.cmd
+		if (data.op) name += '.' + data.op
 	}
-	var type = data.cmd
-	if (data.op) type += '.' + data.op
-	protocol('got ' + type, data)
+	protocol('got ' + name, data)
 	if (this._waitCommands.length > 0) {
-		if (this._waitCommands[0][0] === type) {
+		if (this._waitCommands[0][0] === name) {
 			this._waitCommands.shift()[1](data)
 		}
 	}
-	this._in.emit(type, data)
+	this._in.emit(name, data)
 }
 
 
