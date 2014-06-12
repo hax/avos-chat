@@ -28,7 +28,6 @@ module.exports = Class.extend(EventEmitter)({
 		}.bind(this))
 
 		this._in.on('direct', function (res) {
-			this._incCount()
 			var msg
 			try {
 				msg = JSON.parse(res.msg)
@@ -38,27 +37,13 @@ module.exports = Class.extend(EventEmitter)({
 			msg.fromPeerId = res.fromPeerId
 			protocol('message:' + msg.type, msg)
 			this.emit('message', msg)
+			this.doCommand('ack')
 		}.bind(this))
 
 		this._in.on('ackreq', function (res) {
-			this.ack()
-			this._confirmCount = res.c
+			protocol('ackreq', res)
 		}.bind(this))
 
-		this._count = 0
-	},
-	_incCount: function () {
-		this._count++
-		if (this._count >= this._confirmCount) return this.ack()
-	},
-	ack: function () {
-		protocol('ack')
-		clearTimeout(this._ackTask)
-		this._ackTask = setTimeout(this.ack.bind(this), 120000)
-		return this.doCommand('ack').then(function (res) {
-			this._count = 0
-			this._confirmCount = res.c
-		}.bind(this))
 	},
 	serverURL: function () {
 		var server = this._settings.server
@@ -205,7 +190,7 @@ module.exports = Class.extend(EventEmitter)({
 function Command(name) {
 	var i = name.indexOf('.')
 	if (i === -1) {
-		return { cmd: name, response: name === 'ack' ? 'ackreq' : 'ack' }
+		return { cmd: name, response: name === 'ack' ? undefined : 'ack' }
 	}
 	var cmd = name.slice(0, i), op0 = name.slice(i + 1), op1
 	if (op0 === 'query') op1 = 'query-result'
