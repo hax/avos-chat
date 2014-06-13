@@ -25,7 +25,8 @@ module.exports = Class.extend(EventEmitter)({
 
 		this._in.on('presence', function (res) {
 			res.sessionPeerIds.forEach(function (id) {
-				this._peers[id].presence = res.status === 'on'
+				if (!this._peers[id]) this._peers[id] = { presence: res.status === 'on' } // multiple client may use same session?
+				else this._peers[id].presence = res.status === 'on'
 			}, this)
 			this.emit('presence', res)
 		}.bind(this))
