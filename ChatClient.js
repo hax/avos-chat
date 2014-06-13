@@ -198,6 +198,7 @@ module.exports = Class.extend(EventEmitter)({
 	},
 	ping: function () {
 		this._ws.send('{}')
+		this._keepAlive()
 		return this._wait('pong')
 	},
 	_keepAlive: function () {
