@@ -18,6 +18,7 @@ module.exports = Class.extend(EventEmitter)({
 		if (!settings.appId) throw new Error('settings.appId')
 		if (!settings.auth) throw new Error('settings.auth')
 		this._settings = settings //todo: clone
+		if (this._settings.keepAlive === undefined) this._settings.keepAlive = 240 * 1000 // 4 minutes
 		this._in = new EventEmitter()
 		this._self = null
 		this._peers = Object.create(null)
@@ -185,17 +186,23 @@ module.exports = Class.extend(EventEmitter)({
 		var s = JSON.stringify(msg)
 		this._ws.send(s)
 		network('send', s)
+		this._keepAlive()
 		if (cmd.response) return this._wait(cmd.response)
 	},
 	_wait: function (response) {
 		return new Promise(function (resolve, reject) {
 			protocol('wait ' + response)
 			this._waitCommands.push([response, resolve, reject])
+			//setTimeout(reconnect.bind(this, 'no heartbeat'), this._settings.heartbeatTimeout)
 		}.bind(this))
 	},
 	ping: function () {
 		this._ws.send('{}')
 		return this._wait('pong')
+	},
+	_keepAlive: function () {
+		clearTimeout(this._handle)
+		this._handle = setTimeout(this.ping.bind(this), this._settings.keepAlive)
 	}
 })
 
