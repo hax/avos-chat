@@ -1,6 +1,6 @@
 {
   "name": "avos-chat",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "AVOS Cloud Chat SDK for JavaScript",
   "main": "ChatClient.js",
   "scripts": {
