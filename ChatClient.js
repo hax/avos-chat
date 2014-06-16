@@ -17,8 +17,12 @@ module.exports = Class.extend(EventEmitter)({
 		if (!settings) throw new Error('settings')
 		if (!settings.appId) throw new Error('settings.appId')
 		if (!settings.auth) throw new Error('settings.auth')
-		this._settings = settings //todo: clone
-		if (this._settings.keepAlive === undefined) this._settings.keepAlive = 240 * 1000 // 4 minutes
+		this._settings = {
+			appId: settings.appId,
+			auth: settings.auth,
+			secure: settings.secure !== undefined ? !!settings.secure : true,
+			keepAlive: settings.keepAlive >= 3000 ? 0|settings.keepAlive : 240 * 1000, // 4 minutes
+		}
 		this._in = new EventEmitter()
 		this._self = null
 		this._peers = Object.create(null)
@@ -259,7 +263,7 @@ function lookupServer(settings) {
 	protocol('lookup server', settings)
 	return getJSON('http://router.g0.push.avoscloud.com/v1/route?cb=?', {
 		appId: settings.appId,
-		secure: settings.secure,
+		secure: settings.secure ? '1' : undefined,
 	}).then(function (config) {
 		return {
 			url: config.server,
