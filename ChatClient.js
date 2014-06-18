@@ -22,6 +22,7 @@ module.exports = Class.extend(EventEmitter)({
 			auth: settings.auth,
 			secure: settings.secure !== undefined ? !!settings.secure : true,
 			keepAlive: settings.keepAlive >= 3000 ? 0|settings.keepAlive : 240 * 1000, // 4 minutes
+			server: settings.server,
 		}
 		this._in = new EventEmitter()
 		this._self = null
