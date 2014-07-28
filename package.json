@@ -9,10 +9,12 @@
   "author": "hax <heshijun@baixing.com>",
   "license": "ISC",
   "dependencies": {
-    "debug": "^0.8.1",
+    "debug": "^1.0",
+    "mmclass": "^0.3.0",
     "es6-promise": "^1.0.0",
-    "mmclass": "^0.2.0",
-    "ws": "^0.4.31",
     "xmlhttprequest": "^1.6.0"
+  },
+  "optionalDependencies": {
+    "ws": "^0.4.31"
   }
 }
