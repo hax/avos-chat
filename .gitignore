@@ -1,5 +1,6 @@
 # IDE
 .idea
+.project
 
 # Node.js
 node_modules
