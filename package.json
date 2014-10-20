@@ -9,7 +9,7 @@
   "author": "hax <heshijun@baixing.com>",
   "license": "ISC",
   "dependencies": {
-    "debug": "^2.0",
+    "debug": "^2.1",
     "es6-promise": "^2.0",
     "mmclass": "^0.3",
     "ws": "^0.4",
