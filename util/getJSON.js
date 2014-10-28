@@ -5,8 +5,12 @@ var qs = require('querystring')
 var rest = require('./rest')
 
 module.exports = function getJSON(url, parameters) {
-	if (typeof jQuery !== 'undefined') {
-		return Promise.resolve(jQuery.getJSON.apply(jQuery, arguments))
+	var $ =
+		typeof Zepto !== 'undefined' ? Zepto :
+		typeof jQuery !== 'undefined' ? jQuery :
+		null
+	if ($) {
+		return Promise.resolve($.getJSON.apply($, arguments))
 	} else {
 		var i = url.indexOf('?')
 		if (i === -1) url += '?' + qs.stringify(parameters)

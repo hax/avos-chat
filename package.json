@@ -1,6 +1,6 @@
 {
   "name": "avos-chat",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "AVOS Cloud Chat SDK for JavaScript",
   "main": "ChatClient.js",
   "scripts": {
@@ -12,7 +12,9 @@
     "debug": "^2.1",
     "es6-promise": "^2.0",
     "mmclass": "^0.3",
-    "ws": "^0.4",
     "xmlhttprequest": "^1.6"
+  },
+  "optionalDependencies": {
+    "ws": "^0.4"
   }
 }
