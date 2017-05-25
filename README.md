@@ -1,5 +1,7 @@
 # AVOS Cloud Chat SDK for JavaScript
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/hax/avos-chat.svg)](https://greenkeeper.io/)
+
 ## NOTE
 
 本SDK是在AVOS Cloud（现LeanCloud）的实时通讯服务早期开发的，当时官方只有iOS/Android SDK。
