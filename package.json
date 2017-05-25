@@ -14,11 +14,11 @@
   "license": "ISC",
   "dependencies": {
     "debug": "^2.1",
-    "es6-promise": "^2.0",
-    "mmclass": "^0.3",
+    "es6-promise": "^4.1.0",
+    "mmclass": "^0.4.2",
     "xmlhttprequest": "^1.6"
   },
   "optionalDependencies": {
-    "ws": "^0.4"
+    "ws": "^3.0.0"
   }
 }
